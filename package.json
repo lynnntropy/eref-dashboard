@@ -1,0 +1,31 @@
+{
+  "name": "eref-dashboard",
+  "version": "0.1.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "OmegaVesko",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^1.4.1"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "electron-json-storage": "^3.0.0",
+    "electron-reload": "^1.1.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.1.1",
+    "request": "^2.79.0",
+    "vue": "^2.1.10"
+  }
+}

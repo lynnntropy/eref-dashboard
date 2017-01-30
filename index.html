@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>EREF Dashboard</title>
+
+    <link href="bootstrap.slate.min.css" rel="stylesheet">
+    <link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="app.css" rel="stylesheet">
+</head>
+<body>
+    <div id="login" v-bind:class="{ loading: loading, loaded: loaded, disabled: disabled, manual: manualLogin }">
+        <rotate-loader loading="loading" color="#ffffff" size="15px"></rotate-loader>
+        <div class="login-form">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    EREF Login
+                </div>
+                <div class="panel-body">
+                    <form v-on:submit.prevent="startLogin">
+                        <input class="form-control" type="text" placeholder="Korisničko ime (indeks)" id="login-username" v-model="credentials.username">
+                        <input class="form-control" type="password" placeholder="Lozinka" id="login-password" v-model="credentials.password">
+                        <input class="form-control btn btn-default" type="submit" value="Login" id="login-button">
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 ">
+                <div class="etabla panel panel-default full-height-panel" id="eboard-panel" v-bind:class="{updating: updating}">
+                    <div class="panel-heading">E-Tabla <i v-on:click="if (!updating) update()" class="fa fa-refresh pull-right refresh-indicator"></i></div>
+                    <ul class="list-group" id="eboard-news" v-cloak>
+                        <li class="news-item list-group-item" v-for="item in newsItems">
+                            <div class="metadata">
+                                <p><b>{{item.author}} <i class="fa fa-caret-right" aria-hidden="true"></i> {{item.subject}}</b></p>
+                                <p>{{item.relativeTimeString}} <span class="faded">({{item.dateTime}})</span></p>
+                            </div>
+                            <div class="item-body">
+                                <h4 class="title">{{item.title}}</h4>
+                                <div v-html="item.content"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel panel-default full-height-panel" id="predmeti-panel" v-bind:class="{updating: updating}">
+                    <div class="panel-heading">Predmeti <i v-on:click="if (!updating) update()" class="fa fa-refresh pull-right refresh-indicator"></i></div>
+                    <div class="panel-body">
+                        <div class="predmeti panel panel-default" v-for="(semester, index) in semesters">
+                            <div class="panel-heading"><a v-bind:href="'#subjects-table-'+index" data-toggle="collapse">Predmeti - {{index+1}}. semestar <span class="caret panel-heading-button"></span></a></div>
+                            <table class="table">
+                                <tbody v-bind:id="'subjects-table-'+index" class="collapse" v-bind:class="{in: semester.active}">
+                                <tr>
+                                    <th>Naziv Predmeta</th>
+                                    <th class="text-center">Broj Poena</th>
+                                    <th class="text-center">Ocena</th>
+                                </tr>
+                                <tr v-for="subject in semester.subjects" v-bind:class="{faded: !subject.selected}" v-if="!(semester.active && !subject.selected && subject.grade == '/')">
+                                    <td>{{subject.name}}</td>
+                                    <td class="text-center">{{subject.points}}</td>
+                                    <td class="text-center">{{subject.grade}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3">
+                <div class="profil panel panel-default" id="profile" v-bind:class="{updating: updating}">
+                    <div class="panel-heading">Profil <i v-on:click="if (!updating) update()" class="fa fa-refresh pull-right refresh-indicator"></i></div>
+                    <div class="panel-body">
+                        <p><strong>Ime:</strong> {{firstName}} {{lastName}}</p>
+                        <p><strong>Indeks:</strong> {{index}}</p>
+                    </div>
+                    <table class="table">
+                        <tr><th>Osnov</th><th>Kredit</th></tr>
+                        <tr>
+                            <td>Prijava ispita, itd.</td>
+                            <td>{{generalCredit}}</td>
+                        </tr>
+                        <tr>
+                            <td>Upisnina i školarina</td>
+                            <td>{{tuitionCredit}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="ispiti panel panel-default" id="ispiti" v-cloak v-bind:class="{updating: updating}">
+                    <div class="panel-heading">Prijavljeni Ispiti <i v-on:click="if (!updating) update()" class="fa fa-refresh pull-right refresh-indicator"></i></div>
+                    <ul class="list-group">
+                        <li class="ispit list-group-item" v-for="exam in exams">
+                            <p><strong>Predmet:</strong> {{exam.name}}</p>
+                            <p><strong>Dan polaganja:</strong> {{exam.day}}</p>
+                            <p><strong>Vreme polaganja:</strong> {{exam.time}}</p>
+                        </li>
+                    </ul>
+                    <div class="panel-footer"><span class="btn btn-default" v-on:click="openBrowserWindow('https://eref.vts.su.ac.rs/sr')">Prijava ispita</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.min.js');</script>
+    <script src="bootstrap/dist/js/bootstrap.js"></script>
+    <script src="node_modules/vue/dist/vue.min.js"></script>
+    <script src="vue-spinner.min.js"></script>
+    <script src="moment.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+    	document.addEventListener("keydown", function (e) {
+            var currentWindow = require('electron').remote.getCurrentWindow();
+            if (e.which === 122) {
+                if (currentWindow.isFullScreen())
+                    currentWindow.setFullScreen(false);
+                else
+                    currentWindow.setFullScreen(true);
+            }
+            else if (e.which === 123) {
+                currentWindow.webContents.openDevTools()
+            }
+        });
+    </script>
+</body>
+</html>
