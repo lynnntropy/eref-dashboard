@@ -1,3 +1,4 @@
+const electron = require('electron');
 var fs = require('fs');
 let cheerio = require('cheerio');
 var request = require('request');
@@ -52,7 +53,6 @@ var bus = new Vue({
 
 document.addEventListener("keydown", function (e) {
     if (e.which === 116) {
-        // location.reload();
         bus.$emit('update');
     }
 });
@@ -309,4 +309,16 @@ function initialize()
 
 var linksPanel = new Vue({
     el: '#links-panel'
+});
+
+var logoutButton = new Vue({
+    el: '#logout',
+    methods: {
+        logOut: function() {
+            storage.clear(function(error) {
+                if (error) throw error;
+                require('electron').remote.getCurrentWindow().reload();
+            });
+        }
+    }
 });

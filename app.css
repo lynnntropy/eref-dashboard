@@ -252,3 +252,20 @@ body, html
 {
     background-color: rgba(0, 0, 0, 0.2);
 }
+
+#logout
+{
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+
+    cursor: pointer;
+    text-decoration: underline;
+
+    opacity: 0.75;
+}
+
+#logout:hover
+{
+    opacity: 1;
+}
